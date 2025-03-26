@@ -1,6 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import AddContentForm from "~/components/dashboard/add-content-form.component";
 import ContentList from "~/components/dashboard/content-list.component";
 import ProfileForm from "~/components/dashboard/profile-form.component";
@@ -13,10 +13,13 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
+import { removeLogInInfo } from "~/lib/utils";
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -28,6 +31,11 @@ export default function DashboardPage() {
     );
   }
 
+  const handleLogout = () => {
+    removeLogInInfo();
+    navigate("/");
+  };
+
   return (
     <div className="container mx-auto py-10 min-h-screen">
       <Button asChild variant="outline" className="mb-6">
@@ -38,7 +46,7 @@ export default function DashboardPage() {
       </Button>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Dashboard</h1>
-        <Button variant="outline" onClick={() => {}}>
+        <Button variant="outline" onClick={handleLogout}>
           Sign Out
         </Button>
       </div>
