@@ -1,6 +1,5 @@
-import Main from "~/main/main";
+import Main from "~/components/main/main";
 import type { Route } from "./+types/home";
-import { ModeToggle } from "~/components/mode-toggle";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,9 +15,6 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-background">
       <Main />
-      <div className="absolute top-4 right-4">
-        <ModeToggle />
-      </div>
     </main>
   );
 }
