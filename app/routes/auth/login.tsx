@@ -13,7 +13,7 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 const LoginSchema = Yup.object().shape({
   email: Yup.string()
@@ -27,12 +27,15 @@ const LoginSchema = Yup.object().shape({
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleLogin = async (values: { email: string; password: string }) => {
     setIsLoading(true);
     try {
       // Login the user
 
       toast("Login successful");
+      navigate("/dashboard");
     } catch (error: any) {
       toast("Login failed");
     } finally {

@@ -1,4 +1,6 @@
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Link } from "react-router";
 import AddContentForm from "~/components/dashboard/add-content-form.component";
 import ContentList from "~/components/dashboard/content-list.component";
 import ProfileForm from "~/components/dashboard/profile-form.component";
@@ -27,7 +29,13 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="container mx-auto py-10">
+    <div className="container mx-auto py-10 min-h-screen">
+      <Button asChild variant="outline" className="mb-6">
+        <Link to="/">
+          <ArrowLeft className="mr-2 h-4 w-4" />
+          Back to Home
+        </Link>
+      </Button>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <Button variant="outline" onClick={() => {}}>
