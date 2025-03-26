@@ -14,25 +14,40 @@ import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Button } from "~/components/ui/button";
 import { Link, useNavigate } from "react-router";
-
-const LoginSchema = Yup.object().shape({
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-});
+import { LoginSchema } from "~/validations/login.validation";
+import { usePost } from "~/api/hooks";
+import Endpoints from "~/api/endpoints";
+import type { LoginReqType } from "~/types/request.type";
+import { errorResponseHandler, storeTokens } from "~/lib/utils";
+import type { LoginResType } from "~/types/response.type";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
 
+  const { mutate: login, isPending } = usePost<LoginReqType, LoginResType>({
+    url: Endpoints.login(),
+    options: {
+      onSuccess: (data) => {
+        storeTokens({
+          accessToken: data?.accessToken,
+          refreshToken: data?.refreshToken,
+        });
+        toast("Login successful");
+        navigate("/dashboard");
+      },
+      onError: errorResponseHandler,
+    },
+  });
+
   const handleLogin = async (values: { email: string; password: string }) => {
     setIsLoading(true);
     try {
-      // Login the user
+      login({
+        email: values.email,
+        password: values.password,
+      });
 
       toast("Login successful");
       navigate("/dashboard");
@@ -99,8 +114,12 @@ export default function LoginPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4 mt-4">
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Logging in..." : "Login"}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading || isPending}
+                >
+                  {isLoading || isPending ? "Logging in..." : "Login"}
                 </Button>
                 <div className="text-center text-sm">
                   Don't have an account?{" "}
