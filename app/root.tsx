@@ -12,6 +12,9 @@ import "./app.css";
 import { ThemeProvider } from "./components/theme-provider";
 import { ModeToggle } from "./components/mode-toggle";
 import { Toaster } from "./components/ui/sonner";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+export const queryClient = new QueryClient();
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -48,10 +51,12 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
-      <Outlet />
-      <div className="absolute top-4 right-4">
-        <ModeToggle />
-      </div>
+      <QueryClientProvider client={queryClient}>
+        <Outlet />
+        <div className="absolute top-4 right-4">
+          <ModeToggle />
+        </div>
+      </QueryClientProvider>
     </ThemeProvider>
   );
 }

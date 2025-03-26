@@ -12,7 +12,8 @@ import {
 import { Routes } from "~/constants/routes";
 import { StorageKey } from "~/constants/storage-key";
 
-export const BaseUrl = process.env.REACT_APP_API_URL as string;
+export const BaseUrl =
+  (import.meta.env.VITE_API_URL as string) || "http://localhost:5000";
 
 export const defaultOptions = (baseURL: string) => ({
   baseURL: baseURL,

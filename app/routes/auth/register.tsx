@@ -1,7 +1,6 @@
 import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { Button } from "~/components/ui/button";
 import {
   Card,
@@ -14,24 +13,27 @@ import {
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { toast } from "sonner";
-
-const RegisterSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(2, "Name must be at least 2 characters"),
-  email: Yup.string()
-    .email("Invalid email address")
-    .required("Email is required"),
-  password: Yup.string()
-    .required("Password is required")
-    .min(6, "Password must be at least 6 characters"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .required("Confirm password is required"),
-});
+import { usePost } from "~/api/hooks";
+import type { RegisterReqType } from "~/types/request.type";
+import Endpoints from "~/api/endpoints";
+import { RegisterSchema } from "~/validations/register.validation";
+import { errorResponseHandler } from "~/lib/utils";
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
+
+  const { mutate: register, isPending } = usePost<RegisterReqType>({
+    url: Endpoints.register(),
+    options: {
+      onSuccess: () => {
+        toast("Account created successfully");
+        navigate("/login");
+      },
+      onError: errorResponseHandler,
+    },
+  });
 
   const handleRegister = async (values: {
     name: string;
@@ -40,9 +42,14 @@ export default function RegisterPage() {
   }) => {
     setIsLoading(true);
     try {
-      // Register the user
+      register({
+        username: values.name,
+        email: values.email,
+        password: values.password,
+      });
     } catch (error: any) {
       toast("Registration failed");
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
@@ -145,8 +152,12 @@ export default function RegisterPage() {
                 </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4 mt-4">
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Register"}
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={isLoading || isPending}
+                >
+                  {isLoading || isPending ? "Creating account..." : "Register"}
                 </Button>
                 <div className="text-center text-sm">
                   Already have an account?{" "}

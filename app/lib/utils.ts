@@ -6,6 +6,9 @@ import CryptoJS from "crypto-js";
 import type { TokenType } from "~/types/token.type";
 import Cookies from "js-cookie";
 import { StorageKey } from "~/constants/storage-key";
+import { toast } from "sonner";
+import type { AxiosError } from "axios";
+import type { ErrorType } from "~/types/error.type";
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -14,7 +17,7 @@ export function cn(...inputs: ClassValue[]) {
 dayjs.extend(relativeTime);
 
 const SECRET_ENCRYPTION_KEY =
-  (process.env.REACT_APP_SECRET_ENCRYPTION_KEY as string) ||
+  (import.meta.env.REACT_APP_SECRET_ENCRYPTION_KEY as string) ||
   "secret-encription-key";
 
 // Encrypt tokens
@@ -113,4 +116,8 @@ export function getLocalStorage<T>(key: string): T | null {
 
 export function removeLocalStorage(key: string): void {
   localStorage.removeItem(key);
+}
+
+export function errorResponseHandler(error: AxiosError<ErrorType, any>) {
+  toast(error?.response?.data?.error || "Registration failed");
 }
