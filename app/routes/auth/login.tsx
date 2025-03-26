@@ -1,8 +1,7 @@
-import { ErrorMessage, Field, Form, Formik } from "formik";
-import * as Yup from "yup";
 import { useState } from "react";
-import { Link } from "react-router";
-import { Button } from "~/components/ui/button";
+import { Formik, Form, Field, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import { toast } from "sonner";
 import {
   Card,
   CardContent,
@@ -13,36 +12,29 @@ import {
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
-import { toast } from "sonner";
+import { Button } from "~/components/ui/button";
+import { Link } from "react-router";
 
-const RegisterSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(2, "Name must be at least 2 characters"),
+const LoginSchema = Yup.object().shape({
   email: Yup.string()
     .email("Invalid email address")
     .required("Email is required"),
   password: Yup.string()
     .required("Password is required")
     .min(6, "Password must be at least 6 characters"),
-  confirmPassword: Yup.string()
-    .oneOf([Yup.ref("password")], "Passwords must match")
-    .required("Confirm password is required"),
 });
 
-export default function RegisterPage() {
+export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleRegister = async (values: {
-    name: string;
-    email: string;
-    password: string;
-  }) => {
+  const handleLogin = async (values: { email: string; password: string }) => {
     setIsLoading(true);
     try {
-      // Register the user
+      // Login the user
+
+      toast("Login successful");
     } catch (error: any) {
-      toast("Registration failed");
+      toast("Login failed");
     } finally {
       setIsLoading(false);
     }
@@ -52,41 +44,19 @@ export default function RegisterPage() {
     <div className="container mx-auto flex h-screen items-center justify-center">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle className="text-2xl">Create an account</CardTitle>
+          <CardTitle className="text-2xl">Login</CardTitle>
           <CardDescription>
-            Enter your information to create an account
+            Enter your credentials to access your account
           </CardDescription>
         </CardHeader>
         <Formik
-          initialValues={{
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
-          }}
-          validationSchema={RegisterSchema}
-          onSubmit={handleRegister}
+          initialValues={{ email: "", password: "" }}
+          validationSchema={LoginSchema}
+          onSubmit={handleLogin}
         >
           {({ errors, touched }) => (
             <Form>
               <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Field
-                    as={Input}
-                    id="name"
-                    name="name"
-                    placeholder="John Doe"
-                    className={
-                      errors.name && touched.name ? "border-destructive" : ""
-                    }
-                  />
-                  <ErrorMessage
-                    name="name"
-                    component="div"
-                    className="text-sm text-destructive"
-                  />
-                </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
                   <Field
@@ -124,34 +94,15 @@ export default function RegisterPage() {
                     className="text-sm text-destructive"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="confirmPassword">Confirm Password</Label>
-                  <Field
-                    as={Input}
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type="password"
-                    className={
-                      errors.confirmPassword && touched.confirmPassword
-                        ? "border-destructive"
-                        : ""
-                    }
-                  />
-                  <ErrorMessage
-                    name="confirmPassword"
-                    component="div"
-                    className="text-sm text-destructive"
-                  />
-                </div>
               </CardContent>
               <CardFooter className="flex flex-col space-y-4 mt-4">
                 <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Creating account..." : "Register"}
+                  {isLoading ? "Logging in..." : "Login"}
                 </Button>
                 <div className="text-center text-sm">
-                  Already have an account?{" "}
-                  <Link to="/login" className="underline underline-offset-4">
-                    Login
+                  Don't have an account?{" "}
+                  <Link to="/register" className="underline underline-offset-4">
+                    Register
                   </Link>
                 </div>
               </CardFooter>
