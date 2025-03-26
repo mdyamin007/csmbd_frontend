@@ -1,4 +1,4 @@
-import Main from "~/components/main/main";
+import Main from "~/components/main/main.component";
 import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
