@@ -105,6 +105,14 @@ export default function ContentList({
     );
   }
 
+  const handleGenerateEmbedLink = (youtubeUrl: string) => {
+    const videoIdMatch = youtubeUrl.match(
+      /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
+    );
+    const videoId = videoIdMatch ? videoIdMatch[1] : null;
+    return `https://www.youtube.com/embed/${videoId}`;
+  };
+
   return (
     <>
       <div className="grid grid-cols-1 gap-6">
@@ -139,10 +147,7 @@ export default function ContentList({
                   <iframe
                     width="100%"
                     height="100%"
-                    src={
-                      "https://www.youtube.com/embed/" +
-                      item?.youtubeLink?.split("=")[1]
-                    }
+                    src={handleGenerateEmbedLink(item?.youtubeLink)}
                     title={item?.title}
                     frameBorder="0"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
