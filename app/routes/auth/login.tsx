@@ -49,7 +49,7 @@ export default function LoginPage() {
           refreshToken: data?.refreshToken,
         });
         dispatch(setUser(data?.user));
-        toast("Login successful");
+        toast.success("Login successful");
         navigate("/dashboard");
       },
       onError: errorResponseHandler,
@@ -63,9 +63,6 @@ export default function LoginPage() {
         email: values.email,
         password: values.password,
       });
-
-      toast.success("Login successful");
-      navigate("/dashboard");
     } catch (error: any) {
       toast.error("Login failed");
     } finally {
