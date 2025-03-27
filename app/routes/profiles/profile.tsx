@@ -12,28 +12,26 @@ import {
 } from "~/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
 import ContentList from "~/components/dashboard/content-list.component";
-
-const mockProfileData = {
-  id: "1",
-  name: "John Doe",
-  avatar_url: "https://randomuser.me/api/portraits/men/1.jpg",
-  created_at: "2024-01-15T08:00:00Z",
-  bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-  website: "https://johndoe.com",
-};
+import { useGet } from "~/api/hooks";
+import type { User } from "~/types/data.type";
+import Endpoints from "~/api/endpoints";
+import { QueryKeys } from "~/constants/query-keys";
+import dayjs from "dayjs";
 
 export default function ProfilePage({ params }: Route.ComponentProps) {
   const userId = params.id as string;
-  const [profile, setProfile] = useState<any>(mockProfileData); // Use mock data here
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    // Simulating fetchProfile call
-    setProfile(mockProfileData);
-    setLoading(false);
-  }, [userId]);
+  const { data: profile, isLoading } = useGet<User>({
+    url: Endpoints.userById(userId),
+    options: {
+      enabled: !!userId,
+      queryKey: [QueryKeys.getUserInfo],
+      refetchOnMount: true,
+      refetchOnWindowFocus: false,
+    },
+  });
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="container mx-auto py-10">
         <div className="flex justify-center items-center h-[60vh]">
@@ -73,17 +71,13 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
           <Card>
             <CardHeader className="flex flex-col items-center text-center">
               <Avatar className="h-24 w-24 mb-4">
-                <AvatarImage
-                  src={profile.avatar_url || ""}
-                  alt={profile.name}
-                />
                 <AvatarFallback className="text-2xl">
-                  {profile.name.substring(0, 2).toUpperCase()}
+                  {profile.username.substring(0, 2).toUpperCase()}
                 </AvatarFallback>
               </Avatar>
-              <CardTitle className="text-2xl">{profile.name}</CardTitle>
+              <CardTitle className="text-2xl">{profile.username}</CardTitle>
               <CardDescription>
-                Joined {new Date(profile.created_at).toLocaleDateString()}
+                Joined {dayjs(profile.createdAt).fromNow()}
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -115,8 +109,10 @@ export default function ProfilePage({ params }: Route.ComponentProps) {
         <div className="md:col-span-2">
           <Card>
             <CardHeader>
-              <CardTitle>{profile.name}'s Content</CardTitle>
-              <CardDescription>Videos shared by {profile.name}</CardDescription>
+              <CardTitle>{profile.username}'s Content</CardTitle>
+              <CardDescription>
+                Videos shared by {profile.username}
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <ContentList userId={userId} isOwner={false} />
