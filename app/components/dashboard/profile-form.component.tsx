@@ -1,35 +1,20 @@
-"use client";
-
-import { useEffect, useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-
-const ProfileSchema = Yup.object().shape({
-  name: Yup.string()
-    .required("Name is required")
-    .min(2, "Name must be at least 2 characters"),
-  bio: Yup.string().max(500, "Bio must be less than 500 characters"),
-  website: Yup.string().url("Must be a valid URL"),
-});
-
-interface ProfileFormProps {
-  userId: string;
-}
-
-const profile = {
-  name: "John Doe",
-  bio: "I'm a software developer",
-  website: "https://example.com",
-};
+import useUserInfo from "~/hooks/use-user-info.hook";
+import { ProfileSchema } from "~/validations/profile.validation";
 
 export default function ProfileForm() {
-  const [loading, setLoading] = useState(false);
+  const {
+    user: profile,
+    isLoadingUser,
+    updateUser,
+    isUpdating,
+  } = useUserInfo();
 
-  if (loading) {
+  if (isLoadingUser) {
     return <div>Loading profile...</div>;
   }
 
@@ -37,24 +22,33 @@ export default function ProfileForm() {
     return <div>Profile not found</div>;
   }
 
+  const onSubmit = (values: any) => {
+    updateUser(values);
+  };
+
   return (
     <Formik
       initialValues={{
-        name: profile.name || "",
+        username: profile.username || "",
         bio: profile.bio || "",
         website: profile.website || "",
       }}
       validationSchema={ProfileSchema}
-      onSubmit={() => {}}
+      onSubmit={onSubmit}
       enableReinitialize
     >
-      {({ isSubmitting }) => (
+      {() => (
         <Form className="space-y-6">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Field as={Input} id="name" name="name" placeholder="Your name" />
+            <Label htmlFor="username">Name</Label>
+            <Field
+              as={Input}
+              id="username"
+              name="username"
+              placeholder="Your name"
+            />
             <ErrorMessage
-              name="name"
+              name="username"
               component="div"
               className="text-sm text-destructive"
             />
@@ -91,8 +85,8 @@ export default function ProfileForm() {
             />
           </div>
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Saving..." : "Save Changes"}
+          <Button type="submit" disabled={isUpdating}>
+            {isUpdating ? "Saving..." : "Save Changes"}
           </Button>
         </Form>
       )}

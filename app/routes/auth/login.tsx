@@ -64,10 +64,10 @@ export default function LoginPage() {
         password: values.password,
       });
 
-      toast("Login successful");
+      toast.success("Login successful");
       navigate("/dashboard");
     } catch (error: any) {
-      toast("Login failed");
+      toast.error("Login failed");
     } finally {
       setIsLoading(false);
     }

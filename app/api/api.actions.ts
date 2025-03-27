@@ -12,7 +12,7 @@ export async function getNewToken(refreshToken: string) {
     {},
     {
       headers: {
-        Authorization: `Bearer ${refreshToken}}`,
+        Authorization: `Bearer ${refreshToken}`,
       },
     }
   );
@@ -65,7 +65,7 @@ export async function getAndUpdateToken(_userId: string | null | undefined) {
   if (tokens?.refreshToken) {
     const response = await getNewToken(tokens?.refreshToken);
 
-    const { accessToken = null, refreshToken = null } = response?.data ?? {};
+    const { accessToken = null, refreshToken = null } = response ?? {};
 
     if (!accessToken || !refreshToken) {
       throw new Error(

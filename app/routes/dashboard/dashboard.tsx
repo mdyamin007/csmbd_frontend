@@ -1,5 +1,5 @@
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import AddContentForm from "~/components/dashboard/add-content-form.component";
 import ContentList from "~/components/dashboard/content-list.component";
@@ -29,7 +29,6 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function DashboardPage() {
-  const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();

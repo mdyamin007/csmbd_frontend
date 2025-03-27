@@ -1,10 +1,8 @@
+import type { User } from "./data.type";
+
 export type LoginResType = {
   message: string;
-  user: {
-    id: string;
-    username: string;
-    email: string;
-  };
+  user: User;
   accessToken: string;
   refreshToken: string;
 };

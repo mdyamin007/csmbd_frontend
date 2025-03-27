@@ -39,7 +39,7 @@ export default function RegisterPage() {
     url: Endpoints.register(),
     options: {
       onSuccess: () => {
-        toast("Account created successfully");
+        toast.success("Account created successfully");
         navigate("/login");
       },
       onError: errorResponseHandler,

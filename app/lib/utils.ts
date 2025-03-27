@@ -88,7 +88,7 @@ export function removeTokens() {
 
 export function removeLogInInfo() {
   removeTokens();
-  removeLocalStorage(StorageKey.userId);
+  removeLocalStorage(StorageKey.redux);
 }
 
 export function parseJson(jsonString: string) {
@@ -119,5 +119,5 @@ export function removeLocalStorage(key: string): void {
 }
 
 export function errorResponseHandler(error: AxiosError<ErrorType, any>) {
-  toast(error?.response?.data?.error || "Registration failed");
+  toast.error(error?.response?.data?.error || "Registration failed");
 }
