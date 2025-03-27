@@ -54,12 +54,21 @@ const Main = () => {
         <CardFooter className="border-t px-6 py-4">
           <p className="text-sm text-muted-foreground">
             Want to share your own content?{" "}
-            <Link
-              to="/register"
-              className="font-medium underline underline-offset-4"
-            >
-              Create an account
-            </Link>
+            {!isAuthenticated ? (
+              <Link
+                to="/register"
+                className="font-medium underline underline-offset-4"
+              >
+                Create an account
+              </Link>
+            ) : (
+              <Link
+                to="/dashboard"
+                className="font-medium underline underline-offset-4"
+              >
+                Go to Dashboard
+              </Link>
+            )}
           </p>
         </CardFooter>
       </Card>

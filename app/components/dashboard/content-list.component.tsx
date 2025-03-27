@@ -41,7 +41,7 @@ export default function ContentList({
   const { data: content, isLoading } = useGet<Content[]>({
     url: Endpoints.contentsByUserId(userId!),
     options: {
-      queryKey: [QueryKeys.getContents, userId],
+      queryKey: [QueryKeys.getContents],
       enabled: !!userId,
     },
   });
