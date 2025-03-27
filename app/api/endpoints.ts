@@ -5,6 +5,7 @@ const Endpoints = {
   register: () => "/auth/register",
 
   // profile
+  users: () => "/users",
   userInfo: () => "/users/me",
 
   // contents

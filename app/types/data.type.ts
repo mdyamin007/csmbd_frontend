@@ -4,6 +4,7 @@ export type User = {
   email: string;
   bio?: string;
   website?: string;
+  createdAt?: string;
 };
 
 export type Content = {
