@@ -30,7 +30,6 @@ export default function AddContentForm() {
   const handleAddContent = async (values: any, { resetForm }: any) => {
     setIsSubmitting(true);
     try {
-      // Extract YouTube video ID from URL
       addContent(values);
 
       // Reset form after successful submission

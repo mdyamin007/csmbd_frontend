@@ -2,21 +2,25 @@ import { useState } from "react";
 import { toast } from "sonner";
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "../ui/card";
-import { Button } from "../ui/button";
-import { Trash } from "lucide-react";
-import { useDelete, useGet } from "~/api/hooks";
+import { Pencil, Trash } from "lucide-react";
+import { useDelete, useGet, usePut } from "~/api/hooks";
 import type { Content } from "~/types/data.type";
 import Endpoints from "~/api/endpoints";
 import { QueryKeys } from "~/constants/query-keys";
 import dayjs from "dayjs";
 import DeleteConfirmationModal from "../delete-confirmation-modal.component";
 import { queryClient } from "~/root";
+import { Button } from "../ui/button";
+import EditContentModal from "./edit-content-modal.component";
+import type { ContentReqType } from "~/types/request.type";
+import { errorResponseHandler } from "~/lib/utils";
 
 interface ContentListProps {
   userId?: string;
@@ -31,6 +35,8 @@ export default function ContentList({
     null
   );
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingContent, setEditingContent] = useState<Content | null>(null);
 
   const { data: content, isLoading } = useGet<Content[]>({
     url: Endpoints.contentsByUserId(userId!),
@@ -41,7 +47,7 @@ export default function ContentList({
   });
 
   const { mutate: deleteContent, isPending: isDeleting } = useDelete({
-    url: Endpoints.contentsById(deletingContentId!),
+    url: Endpoints.contentById(deletingContentId!),
     options: {
       onSuccess: () => {
         toast.success("Content deleted successfully");
@@ -50,6 +56,37 @@ export default function ContentList({
       },
     },
   });
+
+  const { mutate: updateContent, isPending: isUpdating } =
+    usePut<ContentReqType>({
+      url: content ? Endpoints.contentById(editingContent?.id!) : "",
+      options: {
+        onSuccess: () => {
+          toast.success("Content updated successfully");
+          queryClient.invalidateQueries({
+            queryKey: [QueryKeys.getContents],
+          });
+          setIsEditModalOpen(false);
+        },
+        onError: errorResponseHandler,
+      },
+    });
+
+  const handleDeleteContent = (id: string) => {
+    setDeletingContentId(id);
+    setIsDeleteModalOpen(true);
+  };
+
+  const handleEditContent = (data: Content) => {
+    setIsEditModalOpen(true);
+    setEditingContent(data);
+  };
+
+  const onEditSubmit = (values: ContentReqType) => {
+    if (content) {
+      updateContent(values);
+    }
+  };
 
   if (isLoading) {
     return <div>Loading content...</div>;
@@ -68,11 +105,6 @@ export default function ContentList({
     );
   }
 
-  const handleDeleteContent = async (id: string) => {
-    setDeletingContentId(id);
-    setIsDeleteModalOpen(true);
-  };
-
   return (
     <>
       <div className="grid grid-cols-1 gap-6">
@@ -84,6 +116,18 @@ export default function ContentList({
                 <CardDescription>
                   Added on {dayjs(item?.createdAt).format("DD/MM/YYYY")}
                 </CardDescription>
+                {isOwner && (
+                  <CardAction>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="cursor-pointer"
+                      onClick={() => handleEditContent(item)}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Button>
+                  </CardAction>
+                )}
               </CardHeader>
               <CardContent>
                 {item?.description && (
@@ -128,6 +172,13 @@ export default function ContentList({
         onDelete={() => deleteContent({})}
         title={"Content"}
         loading={isDeleting}
+      />
+      <EditContentModal
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        content={editingContent}
+        onSubmit={onEditSubmit}
+        loading={isUpdating}
       />
     </>
   );

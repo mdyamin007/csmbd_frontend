@@ -119,5 +119,5 @@ export function removeLocalStorage(key: string): void {
 }
 
 export function errorResponseHandler(error: AxiosError<ErrorType, any>) {
-  toast.error(error?.response?.data?.error || "Registration failed");
+  toast.error(error?.response?.data?.error || "Request failed!");
 }

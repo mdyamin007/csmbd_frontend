@@ -10,7 +10,7 @@ const Endpoints = {
   // contents
   contents: () => "/contents",
   contentsByUserId: (userId: string) => `/contents/user/${userId}`,
-  contentsById: (id: string) => `/contents/${id}`,
+  contentById: (id: string) => `/contents/${id}`,
 };
 
 export default Endpoints;
