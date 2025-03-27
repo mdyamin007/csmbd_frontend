@@ -13,6 +13,9 @@ import { ThemeProvider } from "./components/theme-provider";
 import { ModeToggle } from "./components/mode-toggle";
 import { Toaster } from "./components/ui/sonner";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { Provider } from "react-redux";
+import { persistor, store } from "./lib/redux/store";
+import { PersistGate } from "redux-persist/integration/react";
 
 export const queryClient = new QueryClient();
 
@@ -52,10 +55,14 @@ export default function App() {
   return (
     <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
-        <Outlet />
-        <div className="absolute top-4 right-4">
-          <ModeToggle />
-        </div>
+        <Provider store={store}>
+          <PersistGate persistor={persistor} loading={null}>
+            <Outlet />
+            <div className="absolute top-4 right-4">
+              <ModeToggle />
+            </div>
+          </PersistGate>
+        </Provider>
       </QueryClientProvider>
     </ThemeProvider>
   );

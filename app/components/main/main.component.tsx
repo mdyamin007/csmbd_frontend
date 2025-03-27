@@ -9,8 +9,12 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import UsersList from "./users-list.component";
+import { useAppSelector } from "~/lib/redux/hook";
+import { userState } from "~/lib/redux/slices/userSlice";
 
 const Main = () => {
+  const { isAuthenticated } = useAppSelector(userState);
+
   return (
     <div className="container mx-auto py-10">
       <div className="flex flex-col items-center justify-center space-y-4 text-center mb-10">
@@ -21,14 +25,20 @@ const Main = () => {
           A platform where users can create and manage their own publicly
           viewable content.
         </p>
-        <div className="flex gap-4">
+        {!isAuthenticated ? (
+          <div className="flex gap-4">
+            <Button asChild>
+              <Link to="/login">Login</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link to="/register">Register</Link>
+            </Button>
+          </div>
+        ) : (
           <Button asChild>
-            <Link to="/login">Login</Link>
+            <Link to="/dashboard">Dashboard</Link>
           </Button>
-          <Button asChild variant="outline">
-            <Link to="/register">Register</Link>
-          </Button>
-        </div>
+        )}
       </div>
 
       <Card className="w-full max-w-4xl mx-auto">

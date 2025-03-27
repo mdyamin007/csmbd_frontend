@@ -20,11 +20,25 @@ import Endpoints from "~/api/endpoints";
 import type { LoginReqType } from "~/types/request.type";
 import { errorResponseHandler, storeTokens } from "~/lib/utils";
 import type { LoginResType } from "~/types/response.type";
+import { useAppDispatch } from "~/lib/redux/hook";
+import { setUser } from "~/lib/redux/slices/userSlice";
+import type { Route } from "./+types/login";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Login | CSMBD Content Management" },
+    {
+      name: "description",
+      content: "Welcome to CSMBD Content Management System",
+    },
+  ];
+}
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   const { mutate: login, isPending } = usePost<LoginReqType, LoginResType>({
     url: Endpoints.login(),
@@ -34,6 +48,7 @@ export default function LoginPage() {
           accessToken: data?.accessToken,
           refreshToken: data?.refreshToken,
         });
+        dispatch(setUser(data?.user));
         toast("Login successful");
         navigate("/dashboard");
       },

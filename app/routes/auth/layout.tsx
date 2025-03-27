@@ -11,7 +11,6 @@ const AuthLayout: React.FC = () => {
     const tokens = getTokens();
 
     if (tokens.accessToken) {
-      // remove tokens and reset user
       navigate(Routes.DASHBOARD());
     }
   }, []);

@@ -14,12 +14,26 @@ import {
 } from "~/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { removeLogInInfo } from "~/lib/utils";
+import type { Route } from "./+types/dashboard";
+import { useAppDispatch } from "~/lib/redux/hook";
+import { resetUser } from "~/lib/redux/slices/userSlice";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dashboard | CSMBD Content Management" },
+    {
+      name: "description",
+      content: "Welcome to CSMBD Content Management System",
+    },
+  ];
+}
 
 export default function DashboardPage() {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   if (loading) {
     return (
@@ -33,6 +47,7 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     removeLogInInfo();
+    dispatch(resetUser());
     navigate("/");
   };
 

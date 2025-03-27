@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "CSMBD Content Management" },
+    { title: "Home | CSMBD Content Management" },
     {
       name: "description",
       content: "Welcome to CSMBD Content Management System",

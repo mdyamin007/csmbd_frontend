@@ -18,6 +18,17 @@ import type { RegisterReqType } from "~/types/request.type";
 import Endpoints from "~/api/endpoints";
 import { RegisterSchema } from "~/validations/register.validation";
 import { errorResponseHandler } from "~/lib/utils";
+import type { Route } from "./+types/register";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Register | CSMBD Content Management" },
+    {
+      name: "description",
+      content: "Welcome to CSMBD Content Management System",
+    },
+  ];
+}
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
