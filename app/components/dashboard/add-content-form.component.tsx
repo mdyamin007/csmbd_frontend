@@ -1,53 +1,37 @@
-"use client";
-
 import { useState } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
-import * as Yup from "yup";
 import { toast } from "sonner";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { Textarea } from "../ui/textarea";
 import { Button } from "../ui/button";
-
-const ContentSchema = Yup.object().shape({
-  title: Yup.string()
-    .required("Title is required")
-    .min(3, "Title must be at least 3 characters")
-    .max(100, "Title must be less than 100 characters"),
-  description: Yup.string().max(
-    500,
-    "Description must be less than 500 characters"
-  ),
-  youtube_url: Yup.string()
-    .required("YouTube URL is required")
-    .matches(
-      /^(https?:\/\/)?(www\.)?(youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})$/,
-      "Must be a valid YouTube URL"
-    ),
-});
-
-interface AddContentFormProps {
-  userId: string;
-}
+import { ContentSchema } from "~/validations/content.validation";
+import { usePost } from "~/api/hooks";
+import Endpoints from "~/api/endpoints";
+import { errorResponseHandler } from "~/lib/utils";
+import type { ContentReqType } from "~/types/request.type";
+import { queryClient } from "~/root";
+import { QueryKeys } from "~/constants/query-keys";
 
 export default function AddContentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const { mutate: addContent, isPending } = usePost<ContentReqType>({
+    url: Endpoints.contents(),
+    options: {
+      onSuccess: () => {
+        toast.success("Content added successfully");
+        queryClient.invalidateQueries({ queryKey: [QueryKeys.getContents] });
+      },
+      onError: errorResponseHandler,
+    },
+  });
 
   const handleAddContent = async (values: any, { resetForm }: any) => {
     setIsSubmitting(true);
     try {
       // Extract YouTube video ID from URL
-      const youtubeUrl = values.youtube_url;
-      const videoIdMatch = youtubeUrl.match(
-        /(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/
-      );
-      const videoId = videoIdMatch ? videoIdMatch[1] : null;
-
-      if (!videoId) {
-        throw new Error("Invalid YouTube URL");
-      }
-
-      toast("Content added successfully");
+      addContent(values);
 
       // Reset form after successful submission
       resetForm();
@@ -63,7 +47,7 @@ export default function AddContentForm() {
       initialValues={{
         title: "",
         description: "",
-        youtube_url: "",
+        youtubeLink: "",
       }}
       validationSchema={ContentSchema}
       onSubmit={handleAddContent}
@@ -102,15 +86,15 @@ export default function AddContentForm() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="youtube_url">YouTube URL</Label>
+            <Label htmlFor="youtubeLink">YouTube URL</Label>
             <Field
               as={Input}
-              id="youtube_url"
-              name="youtube_url"
+              id="youtubeLink"
+              name="youtubeLink"
               placeholder="https://youtube.com/watch?v=..."
             />
             <ErrorMessage
-              name="youtube_url"
+              name="youtubeLink"
               component="div"
               className="text-sm text-destructive"
             />
@@ -121,8 +105,8 @@ export default function AddContentForm() {
             </p>
           </div>
 
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Adding..." : "Add Content"}
+          <Button type="submit" disabled={isSubmitting || isPending}>
+            {isSubmitting || isPending ? "Adding..." : "Add Content"}
           </Button>
         </Form>
       )}

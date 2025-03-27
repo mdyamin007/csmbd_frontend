@@ -15,8 +15,8 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "~/components/ui/tabs";
 import { removeLogInInfo } from "~/lib/utils";
 import type { Route } from "./+types/dashboard";
-import { useAppDispatch } from "~/lib/redux/hook";
-import { resetUser } from "~/lib/redux/slices/userSlice";
+import { useAppDispatch, useAppSelector } from "~/lib/redux/hook";
+import { resetUser, userState } from "~/lib/redux/slices/userSlice";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -33,6 +33,7 @@ export default function DashboardPage() {
 
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
+  const { user } = useAppSelector(userState);
 
   if (loading) {
     return (
@@ -93,7 +94,7 @@ export default function DashboardPage() {
               <CardDescription>Manage your content</CardDescription>
             </CardHeader>
             <CardContent>
-              <ContentList isOwner={true} />
+              <ContentList userId={user?.id} isOwner={true} />
             </CardContent>
           </Card>
         </TabsContent>

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { toast } from "sonner";
 import {
   Card,
@@ -10,56 +10,34 @@ import {
 } from "../ui/card";
 import { Button } from "../ui/button";
 import { Trash } from "lucide-react";
+import { useGet } from "~/api/hooks";
+import type { Content } from "~/types/data.type";
+import Endpoints from "~/api/endpoints";
+import { QueryKeys } from "~/constants/query-keys";
+import dayjs from "dayjs";
 
 interface ContentListProps {
   userId?: string;
   isOwner?: boolean;
 }
 
-const mockContentData = [
-  {
-    id: "1",
-    title: "Sample Video 1",
-    description: "This is a description for the first video.",
-    youtube_id: "dQw4w9WgXcQ",
-    created_at: "2024-03-20T10:00:00Z",
-  },
-  {
-    id: "2",
-    title: "Sample Video 2",
-    description: "This is a description for the second video.",
-    youtube_id: "oHg5SJYRHA0",
-    created_at: "2024-03-21T12:00:00Z",
-  },
-  {
-    id: "3",
-    title: "Sample Video 3",
-    description: "",
-    youtube_id: "KJQIQtnQF6Y",
-    created_at: "2024-03-22T14:00:00Z",
-  },
-];
+export default function ContentList({
+  userId,
+  isOwner = false,
+}: ContentListProps) {
+  const { data: content, isLoading } = useGet<Content[]>({
+    url: Endpoints.contentsByUserId(userId!),
+    options: {
+      queryKey: [QueryKeys.getContents, userId],
+      enabled: !!userId,
+    },
+  });
 
-export default function ContentList({ isOwner = false }: ContentListProps) {
-  const [content, setContent] = useState<any[]>(mockContentData); // Set mock data here
-  const [loading, setLoading] = useState(false);
-
-  const handleDeleteContent = async (contentId: string) => {
-    try {
-      // Simulate a delete operation on mock data
-      setContent(content.filter((item) => item.id !== contentId));
-
-      toast("Content deleted");
-    } catch (error: any) {
-      toast("An error occurred");
-    }
-  };
-
-  if (loading) {
+  if (isLoading) {
     return <div>Loading content...</div>;
   }
 
-  if (content.length === 0) {
+  if (content?.length === 0) {
     return (
       <div className="text-center py-10">
         <p className="text-muted-foreground">No content found</p>
@@ -74,44 +52,50 @@ export default function ContentList({ isOwner = false }: ContentListProps) {
 
   return (
     <div className="grid grid-cols-1 gap-6">
-      {content.map((item) => (
-        <Card key={item.id}>
-          <CardHeader>
-            <CardTitle>{item.title}</CardTitle>
-            <CardDescription>
-              Added on {new Date(item.created_at).toLocaleDateString()}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {item.description && (
-              <p className="mb-4 text-muted-foreground">{item.description}</p>
+      {content &&
+        content.map((item) => (
+          <Card key={item.id}>
+            <CardHeader>
+              <CardTitle>{item?.title}</CardTitle>
+              <CardDescription>
+                Added on {dayjs(item?.createdAt).format("DD/MM/YYYY")}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {item?.description && (
+                <p className="mb-4 text-muted-foreground">
+                  {item?.description}
+                </p>
+              )}
+              <div className="aspect-video w-full overflow-hidden rounded-md">
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={
+                    "https://www.youtube.com/embed/" +
+                    item?.youtubeLink?.split("=")[1]
+                  }
+                  title={item?.title}
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                ></iframe>
+              </div>
+            </CardContent>
+            {isOwner && (
+              <CardFooter className="flex justify-end">
+                <Button
+                  variant="destructive"
+                  size="sm"
+                  // onClick={() => handleDeleteContent(item.id)}
+                >
+                  <Trash className="h-4 w-4 mr-2" />
+                  Delete
+                </Button>
+              </CardFooter>
             )}
-            <div className="aspect-video w-full overflow-hidden rounded-md">
-              <iframe
-                width="100%"
-                height="100%"
-                src={`https://www.youtube.com/embed/${item.youtube_id}`}
-                title={item.title}
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-              ></iframe>
-            </div>
-          </CardContent>
-          {isOwner && (
-            <CardFooter className="flex justify-end">
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDeleteContent(item.id)}
-              >
-                <Trash className="h-4 w-4 mr-2" />
-                Delete
-              </Button>
-            </CardFooter>
-          )}
-        </Card>
-      ))}
+          </Card>
+        ))}
     </div>
   );
 }

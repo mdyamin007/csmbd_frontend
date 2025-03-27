@@ -5,3 +5,13 @@ export type User = {
   bio?: string;
   website?: string;
 };
+
+export type Content = {
+  id?: string;
+  title: string;
+  description?: string;
+  youtubeLink: string;
+  userId: string;
+  createdAt: string;
+  updatedAt: string;
+};
