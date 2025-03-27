@@ -1,0 +1,1 @@
+import{w as t,g as o,r as e,t as a}from"./utils-U4k8zN-U.js";import{u as r,r as n,j as i,O as u}from"./chunk-GNGMS2XR-BTyGsKOQ.js";import{R as m}from"./routes-B6W59PFx.js";const p=()=>{const s=r();return n.useEffect(()=>{o().accessToken||(e(),a("Session expired"),s(m.HOME()))},[]),i.jsx(u,{})},k=t(p);export{k as default};

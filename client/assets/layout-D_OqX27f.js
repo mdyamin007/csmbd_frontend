@@ -1,0 +1,1 @@
+import{w as s,g as o}from"./utils-U4k8zN-U.js";import{u as e,r as a,j as r,O as n}from"./chunk-GNGMS2XR-BTyGsKOQ.js";import{R as u}from"./routes-B6W59PFx.js";const c=()=>{const t=e();return a.useEffect(()=>{o().accessToken&&t(u.DASHBOARD())},[]),r.jsx(n,{})},x=s(c);export{x as default};
